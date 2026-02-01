@@ -1,0 +1,40 @@
+import numpy as np
+import pandas as pd
+
+raw = {
+    "age": [25, "N/A", 40, 33, "?"],
+    "income": [50000, 60000, None, "unknown", 80000],
+    "churned": [0, 1, 0, 1, 0],
+}
+
+df0 = pd.DataFrame(raw)
+
+df = df0.replace(["N/A", "NA", "unknown", "?"], np.nan)
+
+def miss(d):
+    c = d.isna().mean() * 100
+    r = d.isna().mean(axis=1) * 100
+    return c, r
+
+c_miss, r_miss = miss(df)
+
+a = df.dropna(subset=["age", "income"])
+
+b = df.copy()
+
+b["age_m"] = b["age"].isna().astype(int)
+b["income_m"] = b["income"].isna().astype(int)
+
+b["age"] = pd.to_numeric(b["age"])
+b["income"] = pd.to_numeric(b["income"])
+
+b["age"] = b["age"].fillna(b["age"].mean())
+b["income"] = b["income"].fillna(b["income"].mean())
+
+a_mean = a[["age", "income"]].mean()
+b_mean = b[["age", "income"]].mean()
+
+print(c_miss)
+print(r_miss)
+print(a_mean)
+print(b_mean)
