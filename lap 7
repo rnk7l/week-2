@@ -1,0 +1,38 @@
+import pandas as pd
+
+train = pd.DataFrame({
+    "age": [25, None, 40, 33],
+    "city": ["NY", "SF", None, "NY"],
+})
+
+test = pd.DataFrame({
+    "age": [None, 50],
+    "city": ["SF", None],
+})
+
+def fit(d, n, c):
+    p = {}
+    for i in n:
+        p[i] = d[i].median()
+    for i in c:
+        p[i] = d[i].mode()[0]
+    return p
+
+def trans(d, p, add=True):
+    x = d.copy()
+    for i in p:
+        if add:
+            x[i + "_m"] = x[i].isna().astype(int)
+        x[i] = x[i].fillna(p[i])
+    return x
+
+n = ["age"]
+c = ["city"]
+
+p = fit(train, n, c)
+
+a = trans(test, p, add=False)
+b = trans(test, p, add=True)
+
+print(a)
+print(b)
