@@ -1,0 +1,41 @@
+import numpy as np
+import pandas as pd
+
+np.random.seed(10)
+
+v = np.concatenate([np.random.lognormal(10, 0.5, 1000), [1e7, 2e7]])
+df = pd.DataFrame({"income": v})
+
+def b(s):
+    q1 = s.quantile(0.25)
+    q3 = s.quantile(0.75)
+    i = q3 - q1
+    l = q1 - 1.5 * i
+    u = q3 + 1.5 * i
+    return l, u
+
+def iqr(s):
+    l, u = b(s)
+    return (s < l) | (s > u)
+
+def z(s, t=3):
+    m = s.mean()
+    d = s.std()
+    z = (s - m) / d
+    return z.abs() > t
+
+o1 = iqr(df["income"])
+o2 = z(df["income"])
+
+c = df.copy()
+l, u = b(c["income"])
+c["income"] = c["income"].clip(l, u)
+
+g = df.copy()
+g["income"] = np.log1p(g["income"])
+
+print(o1.sum())
+print(o2.sum())
+print(df["income"].describe())
+print(c["income"].describe())
+print(g["income"].describe())
