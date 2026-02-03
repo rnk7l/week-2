@@ -1,0 +1,32 @@
+import pandas as pd
+
+r = {
+    "age": ["25", "30", "unknown"],
+    "income": ["$50,000", "$60,000", None],
+    "signup": ["2024-01-01", "01/05/2024", "not a date"],
+}
+
+df = pd.DataFrame(r)
+
+def n(df):
+    d = df.copy()
+
+    d["age"] = pd.to_numeric(d["age"], errors="coerce")
+
+    d["income"] = (
+        d["income"]
+        .str.replace("$", "", regex=False)
+        .str.replace(",", "", regex=False)
+    )
+    d["income"] = pd.to_numeric(d["income"], errors="coerce")
+
+    d["signup"] = pd.to_datetime(d["signup"], errors="coerce")
+
+    v = d.isna().sum()
+
+    return d, v
+
+x, y = n(df)
+
+print(x)
+print(y)
