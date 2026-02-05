@@ -1,0 +1,26 @@
+import pandas as pd
+import numpy as np
+
+d = pd.read_csv("data/day11_income.csv")
+s = d["income"]
+
+def w(s, l, u):
+    a = s.quantile(l)
+    b = s.quantile(u)
+    return s.clip(a, b)
+
+def r(s, u):
+    b = s.quantile(u)
+    return s[s <= b]
+
+s1 = w(s, 0.05, 0.95)
+s2 = r(s, 0.95)
+
+print("Original")
+print(s.describe())
+
+print("Winsorized")
+print(s1.describe())
+
+print("Upper Tail Removed")
+print(s2.describe())
