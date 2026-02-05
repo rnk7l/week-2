@@ -1,0 +1,29 @@
+import pandas as pd
+import re
+
+d = pd.read_csv("data/day12_users.csv")
+
+def c(d):
+    s = d["city"].astype(str)
+    s = s.str.strip().str.lower()
+    s = s.apply(lambda x: re.sub(r"[^\w\s]", "", x))
+    m = {
+        "ny": "new york",
+        "newyork": "new york",
+        "la": "los angeles",
+        "l a": "los angeles"
+    }
+    s = s.replace(m)
+    d["city_clean"] = s
+    return d
+
+def t(d):
+    s = pd.to_datetime(d["timestamp"], errors="coerce", utc=True)
+    d["timestamp_utc"] = s
+    return d
+
+d = c(d)
+d = t(d)
+
+print(d[["city", "city_clean"]])
+print(d[["timestamp", "timestamp_utc"]])
